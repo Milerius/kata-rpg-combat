@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kata-Rpg-Combat", "Kata-Rpg-Combat\Kata-Rpg-Combat.csproj", "{B00D68F8-3C16-46D8-9342-2C90F77BCDEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KataTests", "KataTests\KataTests.csproj", "{D2764043-9B62-408A-81D2-CFDE1F4717C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{B00D68F8-3C16-46D8-9342-2C90F77BCDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B00D68F8-3C16-46D8-9342-2C90F77BCDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B00D68F8-3C16-46D8-9342-2C90F77BCDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2764043-9B62-408A-81D2-CFDE1F4717C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2764043-9B62-408A-81D2-CFDE1F4717C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2764043-9B62-408A-81D2-CFDE1F4717C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2764043-9B62-408A-81D2-CFDE1F4717C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
