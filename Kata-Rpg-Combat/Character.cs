@@ -1,20 +1,23 @@
+using System.Drawing;
+
 namespace Kata_Rpg_Combat
 {
-    public class Character
+    public abstract class Character
     {
         private const uint MaxHealth = 1000;
         private const int MaxLevelDifference = 5;
-        public uint Health { get; set; } = MaxHealth;
-        public uint Level { get; set; } = 1;
 
-        public CharacterState State { get; set; } = CharacterState.Alive;
-
-        public void DealDamage(ref Character other, uint damages)
+        public void DealDamage(Character other, uint damages)
         {
-            if (ReferenceEquals(this, other)) return;
-            if ((int) Level - (int) other.Level >= MaxLevelDifference) damages += damages / 2;
-            else if ((int) other.Level - (int) Level >= MaxLevelDifference) damages -= damages / 2;
-            if (damages >= other.Health)
+            if (MathUtilility.GetDistance(WorldPosition, other.WorldPosition) > _maxRange ||
+                ReferenceEquals(this, other)) return;
+            var isLevelAboveByMaxLevelDifference = (int) Level - (int) other.Level >= MaxLevelDifference;
+            var isLevelBehindByMaxLevelDifference = (int) other.Level - (int) Level >= MaxLevelDifference;
+            if (isLevelAboveByMaxLevelDifference) damages += damages / 2;
+            else if (isLevelBehindByMaxLevelDifference) damages -= damages / 2;
+            var isDamagesExceedOtherHealth = damages >= other.Health;
+
+            if (isDamagesExceedOtherHealth)
             {
                 other.Health = 0;
                 other.State = CharacterState.Dead;
@@ -25,17 +28,28 @@ namespace Kata_Rpg_Combat
 
         public void Heal(uint heal)
         {
-            if (this.State == CharacterState.Dead)
+            if (State == CharacterState.Dead)
                 return;
-            if (this.Health + heal > MaxHealth)
+            if (Health + heal > MaxHealth)
             {
-                this.Health = MaxHealth;
+                Health = MaxHealth;
             }
             else
             {
-                this.Health += heal;
+                Health += heal;
             }
         }
+
+        private readonly uint _maxRange;
+        public Point WorldPosition { get; set; } = Point.Empty;
+
+        protected Character(uint maxRange)
+        {
+            _maxRange = maxRange;
+        }
+
+        public uint Health { get; set; } = MaxHealth;
+        public uint Level { get; set; } = 1;
 
         private bool Equals(Character other)
         {
@@ -46,7 +60,10 @@ namespace Kata_Rpg_Combat
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == this.GetType() && Equals((Character) obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Character) obj);
         }
+
+        public CharacterState State { get; set; } = CharacterState.Alive;
     }
 }

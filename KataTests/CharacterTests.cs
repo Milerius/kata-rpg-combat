@@ -1,83 +1,114 @@
+using System;
+using System.Drawing;
 using Kata_Rpg_Combat;
 using NUnit.Framework;
 
 namespace KataTests
 {
+    [TestFixture]
     public class CharacterTests
     {
+        private Character _chr;
+        private Character _chrTwo;
+        private Character _chrRange;
+
         [SetUp]
         public void Setup()
         {
+            _chr = new MeleeCharacter();
+            _chrTwo = new MeleeCharacter();
+            _chrRange = new RangeCharacter();
         }
 
         [Test]
         public void DefaultValueAreOk()
         {
-            var chr = new Character();
-            Assert.AreEqual(1, chr.Level);
-            Assert.AreEqual(1000, chr.Health);
-            Assert.AreEqual(CharacterState.Alive, chr.State);
-
-            var chrToCompare = new Character {Health = 1000, Level = 1, State = CharacterState.Alive};
-
-            Assert.True(chr.Equals(chrToCompare));
+            Assert.AreEqual(1, _chr.Level);
+            Assert.AreEqual(1000, _chr.Health);
+            Assert.AreEqual(CharacterState.Alive, _chr.State);
+            Assert.AreEqual(Point.Empty, _chr.WorldPosition);
+            Assert.IsTrue(_chr.Equals(_chrTwo));
+            Assert.IsFalse(_chr.Equals(null));
+            Assert.IsFalse(_chr.Equals(new String("")));
+            Assert.IsTrue(_chr.Equals(_chr));
         }
 
-        [Test]
-        public void DealDamage()
+
+        [TestCase(TestName = "DealDamageStandard")]
+        public void DealDamageStandard()
         {
-            var chr = new Character();
-            var chrToFight = new Character();
-
-            chr.DealDamage(ref chrToFight, 100);
-            Assert.AreEqual(900, chrToFight.Health);
-            Assert.True(chrToFight.State == CharacterState.Alive);
-
-            chr.DealDamage(ref chrToFight, 1000);
-            Assert.AreEqual(0, chrToFight.Health);
-            Assert.True(chrToFight.State == CharacterState.Dead);
-
-            chr.DealDamage(ref chr, 100);
-            Assert.AreEqual(1000, chr.Health);
-            Assert.True(chr.State == CharacterState.Alive);
-
-
-            chr = new Character();
-            chrToFight = new Character();
-
-            chr.Level = 6;
-
-            chr.DealDamage(ref chrToFight, 50);
-            Assert.AreEqual(925, chrToFight.Health);
-
-            chr.Level = 1;
-            chrToFight.Level = 6;
-
-            chr.DealDamage(ref chrToFight, 50);
-            Assert.AreEqual(900, chrToFight.Health);
+            _chr.DealDamage(_chrTwo, 100);
+            Assert.AreEqual(900, _chrTwo.Health);
+            Assert.True(_chrTwo.State == CharacterState.Alive);
         }
 
-        [Test]
-        public void Heal()
+        [TestCase(TestName = "DealDamageExceedHealth")]
+        public void DealDamageExceedHealth()
         {
-            var chr = new Character();
-            var otherChrCannotBeHeal = new Character();
+            _chr.DealDamage(_chrTwo, 1100);
+            Assert.AreEqual(0, _chrTwo.Health);
+            Assert.True(_chrTwo.State == CharacterState.Dead);
+        }
 
+        [TestCase(TestName = "DealDamageToMySelf")]
+        public void DealDamageToMySelf()
+        {
+            _chr.DealDamage(_chr, 100);
+            Assert.AreEqual(1000, _chr.Health);
+            Assert.True(_chr.State == CharacterState.Alive);
+        }
 
-            otherChrCannotBeHeal.DealDamage(ref chr, 100);
-            chr.Heal(200);
-            Assert.AreEqual(1000, chr.Health);
+        [TestCase(TestName = "DealDamageWithFiveLevelAbove")]
+        public void DealDamageWithFiveLevelAbove()
+        {
+            _chr.Level = 6;
+            _chr.DealDamage(_chrTwo, 50);
+            Assert.AreEqual(925, _chrTwo.Health);
+        }
 
-            otherChrCannotBeHeal.DealDamage(ref chr, 300);
-            chr.Heal(100);
-            Assert.AreEqual(800, chr.Health);
+        [TestCase(TestName = "DealDamageWithFiveLevelBehind")]
+        public void DealDamageWithFiveLevelBehind()
+        {
+            _chrTwo.Level = 6;
+            _chr.DealDamage(_chrTwo, 50);
+            Assert.AreEqual(975, _chrTwo.Health);
+        }
 
-            otherChrCannotBeHeal.DealDamage(ref chr, 800);
+        [TestCase(TestName = "DealDamageOutOfRange")]
+        public void DealDamageOutOfRange()
+        {
+            _chrTwo.WorldPosition = new Point(15, 15);
+            _chr.DealDamage(_chrTwo, 100);
+            Assert.AreEqual(1000, _chrTwo.Health);
 
+            _chrTwo.WorldPosition = new Point(22, 33);
+            _chrTwo.DealDamage(_chr, 100);
+            Assert.AreEqual(1000, _chr.Health);
+        }
 
-            chr.Heal(100);
-            Assert.True(chr.State == CharacterState.Dead);
-            Assert.AreEqual(0, chr.Health);
+        [TestCase(TestName = "HealMoreThanMaxHealth")]
+        public void HealMoreThanMaxHealth()
+        {
+            _chrTwo.DealDamage(_chr, 100);
+            _chr.Heal(200);
+            Assert.AreEqual(1000, _chr.Health);
+        }
+
+        [TestCase(TestName = "HealRegular")]
+        public void HealRegular()
+        {
+            _chrTwo.DealDamage(_chr, 300);
+            _chr.Heal(100);
+            Assert.AreEqual(800, _chr.Health);
+        }
+
+        [TestCase(TestName = "HealDeathCharacter")]
+        public void HealDeathCharacter()
+        {
+            _chrTwo.DealDamage(_chr, 1100);
+            _chr.Heal(100);
+            Assert.True(_chr.State == CharacterState.Dead);
+            Assert.AreEqual(0, _chr.Health);
         }
     }
 }
