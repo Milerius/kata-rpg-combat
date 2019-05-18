@@ -1,7 +1,7 @@
 using Kata_Rpg_Combat;
 using NUnit.Framework;
 
-namespace Tests
+namespace KataTests
 {
     public class CharacterTests
     {
