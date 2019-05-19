@@ -4,9 +4,12 @@ namespace Kata_Rpg_Combat
 {
     public abstract class Character
     {
+        //! Constant
         private const uint MaxHealth = 1000;
         private const int MaxLevelDifference = 5;
 
+
+        //! Public Member functions
         public void DealDamage(Character other, uint damages)
         {
             if (MathUtilility.GetDistance(WorldPosition, other.WorldPosition) > _maxRange ||
@@ -40,7 +43,7 @@ namespace Kata_Rpg_Combat
         }
 
 
-        //! Relational Operation
+        //! Relational Operations
         private bool Equals(Character other) =>
             Health == other.Health && Level == other.Level && State == other.State &&
             _maxRange == other._maxRange && WorldPosition == other.WorldPosition;
