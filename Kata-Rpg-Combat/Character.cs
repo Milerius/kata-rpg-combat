@@ -33,6 +33,8 @@ namespace Kata_Rpg_Combat
 
         public void DealDamage(IPropsTarget target, uint damagesAmount)
         {
+            if (MathUtilility.GetDistance(WorldPosition, target.WorldPosition) > _maxRange)
+                return;
             if (IsDamagesExceedOtherHealth(damagesAmount, target.Health))
             {
                 target.Health = 0;
