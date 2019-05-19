@@ -34,6 +34,16 @@ namespace KataTests
         }
 
 
+        [TestCase(TestName = "DealDamageToAlly")]
+        public void DealDamageToAlly()
+        {
+            _chr.JoinFaction(Faction.Anthrax);
+            _chrTwo.JoinFaction(Faction.Anthrax);
+            _chr.DealDamage(_chrTwo, 100);
+            Assert.AreEqual(1000, _chrTwo.Health);
+            Assert.True(_chrTwo.State == CharacterState.Alive);
+        }
+
         [TestCase(TestName = "DealDamageStandard")]
         public void DealDamageStandard()
         {
@@ -102,6 +112,20 @@ namespace KataTests
             Assert.AreEqual(800, _chr.Health);
         }
 
+        [TestCase(TestName = "HealAlly")]
+        public void HealAlly()
+        {
+            _chr.JoinFaction(Faction.Anthrax);
+            _chrRange.JoinFaction(Faction.Anthrax);
+            _chrTwo.DealDamage(_chr, 300);
+            _chrRange.Heal(_chr, 100);
+            Assert.AreEqual(800, _chr.Health);
+
+            _chr.LeaveFaction(Faction.Anthrax);
+            _chrRange.Heal(_chr, 100);
+            Assert.AreEqual(800, _chr.Health);
+        }
+
         [TestCase(TestName = "HealDeathCharacter")]
         public void HealDeathCharacter()
         {
@@ -109,6 +133,49 @@ namespace KataTests
             _chr.Heal(100);
             Assert.True(_chr.State == CharacterState.Dead);
             Assert.AreEqual(0, _chr.Health);
+        }
+
+        [TestCase(TestName = "AddOneFaction")]
+        public void AddOneFaction()
+        {
+            Assert.AreEqual(1, _chr.JoinFaction(Faction.Anthrax));
+        }
+
+        [TestCase(TestName = "AddMultipleFactions")]
+        public void AddMultipleFactions()
+        {
+            Assert.AreEqual(3, _chr.JoinFaction(Faction.Anthrax, Faction.Iron, Faction.Vortex));
+        }
+
+        [TestCase(TestName = "AddMultipleSameFactions")]
+        public void AddMultipleSameFactions()
+        {
+            Assert.AreEqual(2, _chr.JoinFaction(Faction.Anthrax, Faction.Anthrax, Faction.Vortex));
+        }
+
+        [TestCase(TestName = "RemoveOneFaction")]
+        public void RemoveOneFaction()
+        {
+            _chr.JoinFaction(Faction.Anthrax);
+            Assert.AreEqual(0, _chr.LeaveFaction(Faction.Anthrax));
+        }
+
+        [TestCase(TestName = "RemoveMultipleFactions")]
+        public void RemoveMultipleFactions()
+        {
+            _chr.JoinFaction(Faction.Anthrax, Faction.Iron);
+            Assert.AreEqual(0, _chr.LeaveFaction(Faction.Anthrax, Faction.Iron));
+        }
+
+        [TestCase(TestName = "AreWeAlly")]
+        public void AreWeAlly()
+        {
+            _chr.JoinFaction(Faction.Anthrax, Faction.Iron);
+            _chrTwo.JoinFaction(Faction.Anthrax, Faction.Vortex);
+            Assert.IsTrue(_chr.AreWeAlly(_chrTwo));
+
+            _chrTwo.LeaveFaction(Faction.Anthrax);
+            Assert.IsFalse(_chr.AreWeAlly(_chrTwo));
         }
     }
 }
